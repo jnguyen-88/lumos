@@ -7,60 +7,28 @@ module.exports = ({ products }) => {
   const renderedProducts = products
     .map((product) => {
       return `
-        <div class="column is-one-quarter">
-          <div class="card product-card text-center">
-            <figure>
-              <img src="data:image/png;base64, ${product.image}"/>
-            </figure>
-            <div class="card-content">
-              <p>${product.title}</p>
-              <h5>$${product.price}</h5>
-            </div>
-            <div class="buttons-1">
-  <a
-    href="?add-to-cart=77"
-    data-quantity="1"
-    class="button add-to-cart"
-    data-product_id="77"
-    data-product_sku=""
-    aria-label="Add “Cotton Hat” to your cart"
-    rel="nofollow"
-  >
-    <svg role="img" viewBox="0 0 20 20" width="20" height="20">
-      <use href="#basket-addtocart" xlink:href="#basket-addtocart"></use>
-    </svg>
-    <span class="screen-reader-text">Add to cart</span> </a
-  ><a
-    href="/sober/?utm_source=landing&amp;add_to_wishlist=77"
-    data-product_id="77"
-    data-product_type="simple"
-    class="button add-to-wishlist-button add-to-wishlist-77"
-    rel="nofollow"
-  >
-    <svg role="img" viewBox="0 0 20 20" width="20" height="20" class="like">
-      <use
-        href="#heart-wishlist-like"
-        xlink:href="#heart-wishlist-like"
-      ></use></svg
-    ><svg role="img" viewBox="0 0 20 20" width="20" height="20" class="liked">
-      <use
-        href="#heart-wishlist-liked"
-        xlink:href="#heart-wishlist-liked"
-      ></use>
-    </svg>
-    <span class="indent-text">Add to wishlist</span>
-  </a>
+        <div class="col col-md-3 product text-center">
+  <figure>
+    <img src="data:image/png;base64, ${product.image}" />
+  </figure>
+  <form action="/cart/products" method="POST">
+    <input hidden value="${product.id}" name="productId" />
+    <div class="buttons-1">
+      <button class="button has-icon is-inverted">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="sr-only sr-only-focusable">Add to cart</span>
+      </button>
+      <button class="button has-icon is-inverted add-to-wishlist-button">
+        <i class="fas fa-heart"></i>
+        <span class="sr-only sr-only-focusable">Add to wishlist</span>
+      </button>
+    </div>
+  </form>
+  <div class="card-content">
+    <p>${product.title}</p>
+    <h5>$${product.price}</h5>
+  </div>
 </div>
-            <footer class="card-footer">
-              <form action="/cart/products" method="POST">
-                <input hidden value="${product.id}" name="productId" />
-                <button class="button has-icon is-inverted">
-                  <i class="fa fa-shopping-cart"></i> Add to cart
-                </button>
-              </form>
-            </footer>
-          </div>
-        </div>
       `;
     })
     .join('\n');
@@ -86,11 +54,11 @@ module.exports = ({ products }) => {
 
     </section>    
     <section>
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
             <div class="col px-5">
               <h2 class="pt-5 pb-4 text-center">Featured Items</h2>
-              <div class="columns products">
+              <div class="row products">
                 ${renderedProducts}  
               </div>
             </div>

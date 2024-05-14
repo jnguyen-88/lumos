@@ -5,9 +5,9 @@ module.exports = ({ errors }) => {
   return layout({
     content: `
       <div class="container">
-        <div class="columns is-centered">
-          <div class="column is-one-quarter">
-            <form method="POST">
+        <div class="row">
+          <div class="col-md-4 offset-md-4">
+            <form method="POST" class="mt-5 pb-3">
               <h1 class="title">Sign in</h1>
               <div class="field">
                 <label class="label">Email</label>
@@ -19,7 +19,7 @@ module.exports = ({ errors }) => {
                 <input required class="input" placeholder="Password" name="password" type="password" />
                 <p class="help is-danger">${getError(errors, 'password')}</p>
               </div>
-              <button class="button is-primary">Submit</button>
+              <button class="button is-primary w-100">Submit</button>
             </form>
             <a href="/signup">Need an account? Sign Up</a>
           </div>

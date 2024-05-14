@@ -15,24 +15,11 @@ module.exports = ({ content }) => {
 
       <body>
         <header>
-          <nav class="navbar navbar-top">
-            <div class="container navbar-container">
-              <div>
-                <ul class="social">
-                  <li><a href=""><i class="fab fa-facebook"></i></a></li>
-                  <li><a href=""><i class="fab fa-twitter"></i></a></li>
-                  <li><a href=""><i class="fab fa-linkedin"></i></a></li>
-                  <li><a href=""><i class="fab fa-dribbble"></i></a></li>
-                  <li><a href=""><i class="fab fa-google-plus"></i></a></li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-          <nav class="navbar navbar-bottom">
-            <div class="container navbar-container  px-5">
+          <nav class="navbar py-3">
+            <div class="container navbar-container px-5">
               <div>
                 <a href="/">
-                  <h3 class="title">LUMOS</h3>
+                  <h3 class="title mb-0">LUMOS</h3>
                 </a>
               </div>
               <div class="navbar-item">
@@ -48,7 +35,6 @@ module.exports = ({ content }) => {
             </div>
           </nav>
         </header>
-
         ${content}
       </body>
     </html>

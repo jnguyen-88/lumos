@@ -1,5 +1,5 @@
 body {
-  --primary: #3292a6;
+  --primary: #23232c;
   --secondary: #9e4770;
   --white: #fbfbfb;
   --dark: #2e2532;
@@ -18,10 +18,17 @@ a {
   color: var(--black);
 }
 
+.button.is-primary {
+  background-color: var(--primary);
+  border-radius: 0;
+  padding: 1.5rem;
+  text-transform: uppercase;
+}
+
 .buttons-1 {
   text-align: center;
   position: absolute;
-  top: 100%;
+  top: 50%;
   width: 100%;
 
   .button {
@@ -39,10 +46,9 @@ a {
   }
 }
 
-.column.is-one-quarter:hover .buttons-1 {
+.col.product:hover .buttons-1 {
   text-align: center;
   position: absolute;
-  top: 100%;
   width: 100%;
 
   .button {
@@ -51,16 +57,16 @@ a {
   }
 }
 
-.column.is-one-quarter img {
-  max-height: 272px;
+.col.product {
+  position: relative;
 }
 
-.column.is-one-quarter .buttons-1 .button {
+.col.product .buttons-1 .button {
   transition: transform 0.5s, opacity 0.3s, background 0.5s;
   border-radius: 50%;
 }
 
-.column.is-one-quarter .buttons-1 .button.add-to-wishlist-button {
+.col.product .buttons-1 .button.add-to-wishlist-button {
   transition-delay: 0.1s;
 }
 
@@ -139,10 +145,6 @@ a {
   width: 100%;
 }
 
-.admin > div.container {
-  margin: 40px 10%;
-}
-
 .admin .control {
   display: flex;
   justify-content: space-between;
@@ -162,6 +164,20 @@ a {
 
 .admin table td {
   vertical-align: middle;
+}
+
+.admin .label {
+  display: none;
+}
+
+.admin .input {
+  color: #23232c;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 2px solid #e4e6eb;
+  padding: 12px 0;
+  transition: 0.5s;
+  box-shadow: none;
 }
 
 .product-card .card-footer button {
@@ -211,4 +227,9 @@ a {
 .cart-right {
   display: flex;
   align-items: center;
+}
+
+.card {
+  border: none;
+  box-shadow: none;
 }

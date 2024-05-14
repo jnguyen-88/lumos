@@ -2,7 +2,7 @@ const layout = require('../layout');
 
 module.exports = ({ products }) => {
   const renderedProducts = products
-    .map(product => {
+    .map((product) => {
       return `
       <tr>
         <td>${product.title}</td>
@@ -26,11 +26,13 @@ module.exports = ({ products }) => {
 
   return layout({
     content: `
-      <div class="control">
-        <h1 class="subtitle">Products</h1>  
-        <a href="/admin/products/new" class="button is-primary">New Product</a>
+      <div class="control container">
+      <div class="upper">
+        <h1 class="subtitle d-inline-block">Products</h1>  
+        <a href="/admin/products/new" class="button is-primary">Create New Product</a>
       </div>
-      <table class="table">
+      </div>
+      <table class="table container">
         <thead>
           <tr>
             <th>Title</th>

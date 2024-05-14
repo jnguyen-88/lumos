@@ -6,9 +6,9 @@ module.exports = ({ req, errors }) => {
   return layout({
     content: `
       <div class="container">
-        <div class="columns is-centered">
-          <div class="column is-one-quarter">
-            <form method="POST">
+        <div class="row">
+          <div class="col-md-4 offset-md-4">
+            <form method="POST" class="mt-5 pb-3">
               <h1 class="title">Sign Up</h1>
               <div class="field">
                 <label class="label">Email</label>
@@ -28,7 +28,7 @@ module.exports = ({ req, errors }) => {
                   'passwordConfirmation'
                 )}</p>
               </div>
-              <button class="button is-primary">Submit</button>
+              <button class="button is-primary w-100">Submit</button>
             </form>
             <a href="/signin">Have an account? Sign In</a>
           </div>

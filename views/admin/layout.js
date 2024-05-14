@@ -14,26 +14,27 @@ module.exports = ({ content }) => {
 
       <body class="admin">
         <header>
-          <nav class="navbar navbar-bottom">
-            <div class="container navbar-container">
+          <nav class="navbar py-3">
+            <div class="container navbar-container px-5">
               <div>
-                <a href="/admin/products">
-                  <h3 class="title">Admin Panel</h3>
+                <a href="/">
+                  <h3 class="title mb-0">LUMOS</h3>
                 </a>
               </div>
               <div class="navbar-item">
                 <div class="navbar-buttons">
                   <div class="navbar-item">
-                    <a href="/admin/products"><i class="fa fa-star"></i> Products</a>
+                    <a href="/"><i class="fa fa-star"></i> Products</a>
+                  </div>
+                  <div class="navbar-item">
+                    <a href="/cart"><i class="fa fa-shopping-cart"></i> Cart</a>
                   </div>
                 </div>
               </div>
             </div>
           </nav>
         </header>
-        <div class="container">
-          ${content}
-        </div>
+        ${content}
       </body>
     </html>
   `;
