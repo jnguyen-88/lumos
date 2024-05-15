@@ -8,12 +8,14 @@ module.exports = ({ product, errors }) => {
         <div class="column is-half">
           <h1 class="subtitle">Edit a Product</h1>
 
-          <form method="POST" enctype="multipart/form-data">
+          <form method="POST" action="/admin/products/${
+            product._id
+          }?_method=PUT">
             <div class="field">
               <label class="label">Title</label>
               <input value="${
                 product.title
-              }" class="input" placeholder="Title" name="title">
+              }" class="input" placeholder="Title" name="product[title]">
               <p class="help is-danger">${getError(errors, 'title')}</p>
             </div>
             
@@ -21,14 +23,11 @@ module.exports = ({ product, errors }) => {
               <label class="label">Price</label>
               <input value="${
                 product.price
-              }" class="input" placeholder="Price" name="price">
+              }" class="input" placeholder="Price" name="product[price]">
               <p class="help is-danger">${getError(errors, 'price')}</p>
             </div>
             
-            <div class="field">
-              <label class="label">Image</label>            
-              <input type="file" name="image" />
-            </div>
+
             <br />
             <button class="button is-primary">Edit</button>
           </form>

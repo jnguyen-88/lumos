@@ -9,8 +9,10 @@ module.exports = ({ products }) => {
       return `
         <div class="col col-md-3 product text-center">
   <figure>
+  <a href="/${product._id}">
     <img src="data:image/png;base64, ${product.image}" />
   </figure>
+  </a>
   <form action="/cart/products" method="POST">
     <input hidden value="${product.id}" name="productId" />
     <div class="buttons-1">
