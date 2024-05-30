@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { handleErrors } = require('./middlewares');
+const { handleErrors, validateProduct } = require('./middlewares');
 const usersRepo = require('../../repositories/users');
 const signupTemplate = require('../../views/admin/auth/signup');
 const signinTemplate = require('../../views/admin/auth/signin');

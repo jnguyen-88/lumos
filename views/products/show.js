@@ -3,12 +3,11 @@ const app = express();
 app.use(express.static('public'));
 const layout = require('../layout');
 
-module.exports = ({ product }) => {
+module.exports = ({ product, cartItemCount }) => {
   const renderedProductHTML = `
-        <div class="col col-md-3 product text-center">
+  <div class="col col-md-3 product text-center">
   <figure>
-  <p>Hello</p>
-    <img src="data:image/png;base64, ${product.image}" />
+    <img src="${product.images[0].url}" />
   </figure>
   <form action="/cart/products" method="POST">
     <input hidden value="${product.id}" name="productId" />
@@ -67,6 +66,7 @@ module.exports = ({ product }) => {
         </div>
       </div>
     </section>
-    `
+    `,
+    cartItemCount
   });
 };

@@ -1,27 +1,21 @@
 const layout = require('../layout');
 
-module.exports = ({ items }) => {
-  let totalPrice = 0;
-  for (let item of items) {
-    totalPrice += item.quantity * item.product.price;
-  }
-
-  const renderedItems = items
+module.exports = ({ cart, cartItemCount }) => {
+  const renderedItems = cart.items
     .map((item) => {
       return `
         <div class="cart-item message">
           <h3 class="subtitle">${item.product.title}</h3>
           <div class="cart-right">
             <div>
-              $${item.product.price}  X  ${item.quantity} = 
+             $${item.price}  X  ${item.quantity} = 
             </div>
             <div class="price is-size-4">
-              $${item.product.price * item.quantity}
+             $${item.price * item.quantity}
             </div>
             <div class="remove">
-              <form method="POST" action="/cart/products/delete">
-              <input hidden value="${item.id}" name="itemId" />
-                <button class="button is-danger">                  
+              <form method="POST" action="/cart/${item._id}?_method=DELETE">
+                <button class="button is-danger" type="submit">                  
                   <span class="icon is-small">
                     <i class="fas fa-times"></i>
                   </span>
@@ -48,13 +42,14 @@ module.exports = ({ items }) => {
               <div class="message-header">
                 Total
               </div>
-              <h1 class="title">$${totalPrice}</h1>
+              <h1 class="title"> $${cart.total} </h1>
               <button class="button is-primary">Buy</button>
             </div>
           </div>
           <div class="column"></div>
         </div>
       </div>
-    `
+    `,
+    cartItemCount
   });
 };

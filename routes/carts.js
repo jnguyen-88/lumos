@@ -1,68 +1,85 @@
 const express = require('express');
-const cartsRepo = require('../repositories/carts');
-const productsRepo = require('../repositories/products');
+const checkAsync = require('../utils/checkAsync');
 const cartShowTemplate = require('../views/carts/show');
+const mainTemplate = require('../views/layout');
+const Cart = require('../models/cart');
+const Product = require('../models/product');
 
 const router = express.Router();
 
-// Receive a post request to add an item to a cart
-router.post('/cart/products', async (req, res) => {
-  // Figure out the cart!
-  let cart;
-  if (!req.session.cartId) {
-    // We dont have a cart, we need to create one,
-    // and store the cart id on the req.session.cartId
-    // property
-    cart = await cartsRepo.create({ items: [] });
-    req.session.cartId = cart.id;
-  } else {
-    // We have a cart! Lets get it from the repository
-    cart = await cartsRepo.getOne(req.session.cartId);
-  }
+//ADD item to Cart
+router.post(
+  '/products',
+  checkAsync(async (req, res) => {
+    const { productId, quantity: quantityString } = req.body.cart;
+    const quantity = parseInt(quantityString, 10); // Convert 'quantity' to a number bc will be String
+    const existingCart = await Cart.findOne();
+    const product = await Product.findById(productId);
 
-  const existingItem = cart.items.find(
-    (item) => item.id === req.body.productId
-  );
-  if (existingItem) {
-    // increment quantity and save cart
-    existingItem.quantity++;
-  } else {
-    // add new product id to items array
-    cart.items.push({ id: req.body.productId, quantity: 1 });
-  }
-  await cartsRepo.update(cart.id, {
-    items: cart.items
-  });
+    if (existingCart) {
+      const itemIndex = existingCart.items.findIndex(
+        (item) => item.product.toString() === productId
+      );
+      if (itemIndex > -1) {
+        existingCart.items[itemIndex].quantity += quantity;
+        existingCart.total += product.price * quantity;
+      } else {
+        existingCart.items.push({
+          product: productId,
+          quantity,
+          price: product.price
+        });
+        existingCart.total += product.price * quantity;
+      }
+      await existingCart.save();
+    } else {
+      // Create new cart if not existing
+      const newCart = new Cart({
+        items: [{ product: productId, quantity, price: product.price }],
+        total: product.price * quantity // Initial total calculation
+      });
+      await newCart.save();
+    }
 
-  res.redirect('/cart');
-});
+    res.redirect('/cart');
+  })
+);
 
-// Receive a GET request to show all items in cart
-router.get('/cart', async (req, res) => {
-  if (!req.session.cartId) {
-    return res.redirect('/');
-  }
+// DELETE item from Cart
+router.delete(
+  '/:id',
+  checkAsync(async (req, res) => {
+    const { id } = req.params;
+    const cart = await Cart.findOne(); // There's only one cart for now
 
-  const cart = await cartsRepo.getOne(req.session.cartId);
+    if (cart) {
+      // Filter OUT the item with the given product ID
+      const updatedItems = cart.items.filter(
+        (item) => item._id.toString() !== id
+      );
+      cart.items = updatedItems;
+      cart.total = updatedItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+      await cart.save();
+    }
+    res.redirect('/cart');
+  })
+);
 
-  for (let item of cart.items) {
-    const product = await productsRepo.getOne(item.id);
+//GET all items in Cart
+router.get(
+  '/',
+  checkAsync(async (req, res) => {
+    const cart = await Cart.findOne().populate('items.product');
 
-    item.product = product;
-  }
+    const cartItemCount = cart
+      ? cart.items.reduce((total, item) => total + item.quantity, 0)
+      : 0;
 
-  res.send(cartShowTemplate({ items: cart.items }));
-});
+    res.send(cartShowTemplate({ cart, cartItemCount }));
+  })
+);
 
-// Receive a post request to delete an item from a cart
-router.post('/cart/products/delete', async (req, res) => {
-  const { itemId } = req.body;
-  const cart = await cartsRepo.getOne(req.session.cartId);
-
-  const items = cart.items.filter((item) => item.id !== itemId);
-
-  await cartsRepo.update(req.session.cartId, { items: items });
-
-  res.redirect('/cart');
-});
 module.exports = router;

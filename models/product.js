@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//2 images per product
 const ProductSchema = new Schema({
   title: {
     type: String,
@@ -13,6 +14,16 @@ const ProductSchema = new Schema({
   },
   description: {
     type: String
+  },
+  images: [
+    {
+      url: String,
+      filename: String
+    }
+  ],
+  isFeatured: {
+    type: Boolean,
+    default: false
   }
 });
 

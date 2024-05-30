@@ -1,3 +1,7 @@
+:root {
+  --c-bs-modal-width: 950px;
+}
+
 body {
   --primary: #23232c;
   --secondary: #9e4770;
@@ -44,6 +48,42 @@ a {
     overflow: hidden;
     opacity: 0;
   }
+}
+
+.product-header {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.product-header img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 0 1em;
+  box-shadow: none;
+  margin-bottom: 0;
+  transition: opacity 0.7s;
+}
+
+.product-hover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/* Modal */
+.modal-content {
+  flex-direction: row;
+}
+
+.modal-header {
+  border-bottom: none;
 }
 
 .col.product:hover .buttons-1 {
@@ -232,4 +272,10 @@ a {
 .card {
   border: none;
   box-shadow: none;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: var(--c-bs-modal-width);
+  }
 }
