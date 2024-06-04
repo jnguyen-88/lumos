@@ -1,6 +1,6 @@
 const express = require('express');
 const layout = require('../views/layout');
-const ExpressError = require('../utils/ExpressError');
+const ExpressError = require('../public/javascripts/ExpressError');
 const errorsTemplate = require('../views/error');
 
 const router = express.Router();

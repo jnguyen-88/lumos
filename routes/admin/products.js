@@ -5,13 +5,19 @@ const { storage } = require('../../cloudinary');
 
 const methodOverride = require('method-override');
 
-const { handleErrors, requireAuth, validateProduct } = require('./middlewares');
+const {
+  handleErrors,
+  requireAuth,
+  validateProduct,
+  isLoggedIn
+} = require('./middlewares');
 const productsNewTemplate = require('../../views/admin/products/new');
 const productsIndexTemplate = require('../../views/admin/products/index');
 const productsEditTemplate = require('../../views/admin/products/edit');
-const checkAsync = require('../../utils/checkAsync');
+const signInTemplate = require('../../views/admin/auth/signin');
+const checkAsync = require('../../public/javascripts/checkAsync.js');
 const products = require('../../views/products');
-const ExpressError = require('../../utils/ExpressError.js');
+const ExpressError = require('../../public/javascripts/ExpressError.js');
 
 const router = express.Router();
 
@@ -20,7 +26,7 @@ const upload = multer({ storage });
 // POST route for creating a new product (for Admin only)
 router.post(
   '/products/new',
-  requireAuth,
+  isLoggedIn,
   upload.array('images', 2),
   checkAsync(async (req, res, next) => {
     const { title, price, description, isFeatured } = req.body.product;
@@ -38,6 +44,7 @@ router.post(
       }))
     };
     await Product.create(productData);
+    req.flash('success', 'Created New Product');
     res.redirect(`/admin/products`);
   })
 );
@@ -45,22 +52,35 @@ router.post(
 // GET route to list all products (for Admin only)
 router.get(
   '/products',
-  requireAuth,
+  isLoggedIn,
   checkAsync(async (req, res) => {
     const products = await Product.find({});
-    res.send(productsIndexTemplate({ products }));
+    res.send(
+      productsIndexTemplate({
+        products,
+        flashSuccess: res.locals.flashSuccess,
+        flashError: res.locals.flashError,
+        currentUser: res.locals.currentUser
+      })
+    );
   })
 );
 
 // GET route for creating a new product form (for Admin only)
-router.get('/products/new', requireAuth, (req, res) => {
-  res.send(productsNewTemplate({}));
+router.get('/products/new', isLoggedIn, (req, res) => {
+  res.send(
+    productsNewTemplate({
+      flashSuccess: res.locals.flashSuccess,
+      flashError: res.locals.flashError,
+      currentUser: res.locals.currentUser
+    })
+  );
 });
 
 // DELETE route for deleting a product (for Admin only)
 router.delete(
   '/products/:id',
-  requireAuth,
+  isLoggedIn,
   checkAsync(async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
     res.redirect('/admin/products');
@@ -70,20 +90,27 @@ router.delete(
 // GET route for editing a product (for Admin only)
 router.get(
   '/products/:id/edit',
-  requireAuth,
+  isLoggedIn,
   checkAsync(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.send('Product not found');
     }
-    res.send(productsEditTemplate({ product }));
+    res.send(
+      productsEditTemplate({
+        product,
+        flashSuccess: res.locals.flashSuccess,
+        flashError: res.locals.flashError,
+        currentUser: res.locals.currentUser
+      })
+    );
   })
 );
 
 // PUT route for updating a product (for Admin only)
 router.put(
   '/products/:id',
-  requireAuth,
+  isLoggedIn,
   upload.array('images', 2),
   (err, req, res, next) => {
     // Error handling middleware for multer

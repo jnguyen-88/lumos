@@ -15,8 +15,10 @@ function renderProductType(productType, count, collection) {
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content row">
-      <div class="col-6 g-0"><img src="${productType.images[0].url}" /></div>
-      <div class="col-6">
+      <div class="col-12 col-lg-6 g-0 modal-img"><img src="${
+        productType.images[0].url
+      }" /></div>
+      <div class="col-12 col-lg-6">
         <div class="modal-header">
           <button
             type="button"
@@ -30,9 +32,22 @@ function renderProductType(productType, count, collection) {
             ${productType.title}
           </h1>
            <p class="lead fs-6">${productType.description}</p>
-           <p class="price mt-3 mb-5 fs-2">$${parseFloat(
+           <p class="price mt-3 mb-3 mb-md-4 fs-2">$${parseFloat(
              productType.price
            ).toFixed(2)}</p>
+           <form action="/cart/products" method="POST">
+            <input hidden value="${productType.id}" name="cart[productId]" />
+            <div class="buttons-1 buttons-modal">
+            <div class="d-flex justify-content-center mb-3 mb-md-6">
+              <span class="input-number-decrement">–</span>
+               <input name="cart[quantity]" class="input-number" value="1" min="1" max="10">
+              <span class="input-number-increment">+</span>
+            </div>
+            <button class="button" style="width:45%;border-style: none;line-height: 50px;">
+              <i class="fi fi-rs-shopping-cart me-1"></i> Add to cart
+            </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -40,34 +55,41 @@ function renderProductType(productType, count, collection) {
 </div>
 
 <!-- Product -->
-  <div class="col col-md-3 product text-center">
+  <div class="col col-4 col-md-3 product text-center mb-5 mb-lg-6">
   <figure class="product-header" data-bs-toggle="modal" data-bs-target="#${collection}Modal-${count}">
     <img src="${productType.images[0].url}" />
     <img class="product-hover-image" src="${productType.images[1].url}" />
   </figure>
-  <form action="/cart/products" method="POST">
+  <form action="/cart/products" method="POST" onsubmit="return handleAddToCart()">
     <input hidden value="${productType.id}" name="cart[productId]" />
     <input type="hidden" name="cart[quantity]" value="1" /> 
     <div class="buttons-1">
-      <button class="button has-icon is-inverted">
-        <i class="fas fa-shopping-cart"></i>
+      <button class="button has-icon">
+        <i class="fi fi-rs-shopping-cart"></i>
         <span class="sr-only sr-only-focusable">Add to cart</span>
       </button>
-      <button class="button has-icon is-inverted add-to-wishlist-button">
-        <i class="fas fa-heart"></i>
+      <button class="button has-icon add-to-wishlist-button">
+        <i class="fi fi-rs-heart"></i>
         <span class="sr-only sr-only-focusable">Add to wishlist</span>
       </button>
     </div>
   </form>
-  <div class="card-content">
-    <p>${productType.title}</p>
-    <h5>$${parseFloat(productType.price).toFixed(2)}</h5>
+  <div class="card-content my-lg-5">
+    <p class="card-text-title mb-2 mb-lg-3">${productType.title}</p>
+    <p class="card-text-price">$${parseFloat(productType.price).toFixed(2)}</p>
   </div>
 </div>
       `;
 }
 
-module.exports = ({ allProducts, featuredProducts, cartItemCount }) => {
+module.exports = ({
+  allProducts,
+  featuredProducts,
+  cartItemCount,
+  flashSuccess,
+  flashError,
+  currentUser
+}) => {
   const renderedAllProducts = allProducts
     .map((product, count) => {
       return renderProductType(product, count, 'allCollection');
@@ -83,26 +105,24 @@ module.exports = ({ allProducts, featuredProducts, cartItemCount }) => {
   return layout({
     content: `
     <section id="showcase" class="py-5 text-center">
-  <div class="primary-overlay">
     <div class="container">
       <div class="row">
-        <div class="col-6 offset-3">
-          <h1 class="display-1 mt-5 pt-5">Style Made Simple</h1>
-          <p class="lead">
+        <div class="col-12 col-lg-8 offset-lg-2">
+          <h1 class="display-3 mt-2 pt-2 mt-sm-5 mt-lg-0">Style Made Simple</h1>
+          <p class="lead mt-3">
             Your one-stop fashion destination. Discover the latest trends and
             timeless classics for a wardrobe that's always on point.
           </p>
         </div>
       </div>
     </div>
-  </div>
 </section>
 
 <section>
-      <ul class="nav nav-pills pt-5 pb-4 d-flex justify-content-center" id="pills-tab" role="tablist">
+      <ul class="nav c-text-lg nav-pills py-5 d-flex justify-content-center" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
     <button
-      class="nav-link active"
+      class="nav-link active px-3 px-md-5"
       id="pills-collection-tab"
       data-bs-toggle="pill"
       data-bs-target="#pills-collection"
@@ -166,7 +186,42 @@ module.exports = ({ allProducts, featuredProducts, cartItemCount }) => {
   </div>
 </div>
 </section>
+
+  <script>
+  function handleAddToCart() {
+  if (${!currentUser}) {
+    window.location.href = '/signin';
+    return false;
+  }
+  return true; 
+}</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputFields = document.querySelectorAll('.input-number');
+    
+    inputFields.forEach(function(inputField) {
+        const decrementBtn = inputField.previousElementSibling;
+        const incrementBtn = inputField.nextElementSibling;
+        const minValue = inputField.min;
+
+        decrementBtn.addEventListener('click', function() {
+            let currentValue = parseInt(inputField.value);
+            if(inputField.value > minValue){inputField.value = currentValue - 1;}
+        });
+
+        incrementBtn.addEventListener('click', function() {
+            let currentValue = parseInt(inputField.value);
+            inputField.value = currentValue + 1;
+        });
+    });
+});
+
+</script>
     `,
-    cartItemCount
+    cartItemCount,
+    flashError,
+    flashSuccess,
+    currentUser
   });
 };

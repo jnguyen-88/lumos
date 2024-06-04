@@ -9,7 +9,12 @@ const CartItemSchema = new Schema({
 
 const CartSchema = new Schema({
   items: [CartItemSchema],
-  total: { type: Number, default: 0 }
+  total: { type: Number, default: 0 },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    unique: true
+  }
 });
 
 module.exports = mongoose.model('Cart', CartSchema);

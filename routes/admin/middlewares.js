@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const { productSchema } = require('../../schemas');
-const ExpressError = require('../../utils/ExpressError');
+const ExpressError = require('../../public/javascripts/ExpressError');
 
 module.exports = {
   validateProduct(req, res, next) {
@@ -34,6 +34,20 @@ module.exports = {
       return res.redirect('/signin');
     }
 
+    next();
+  },
+  isLoggedIn(req, res, next) {
+    if (!req.isAuthenticated()) {
+      req.flash('error', 'You must be signed in');
+      req.session.returnTo = req.originalUrl;
+      return res.redirect('/signin');
+    }
+    next();
+  },
+  storeReturnTo(req, res, next) {
+    if (req.session.returnTo) {
+      res.locals.returnTo = req.session.returnTo;
+    }
     next();
   }
 };

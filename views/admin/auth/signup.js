@@ -1,18 +1,17 @@
 const layout = require('../layout');
 const { getError } = require('../../helpers');
 
-module.exports = ({ req, errors }) => {
-  console.log(errors);
+module.exports = ({ req, flashSuccess, errors, currentUser }) => {
   return layout({
     content: `
       <div class="container">
         <div class="row">
           <div class="col-md-4 offset-md-4">
-            <form method="POST" class="mt-5 pb-3">
-              <h1 class="title">Sign Up</h1>
+            <form method="POST" action="/signup" class="mt-5 pb-3 validated-form" novalidate>
+              <h1 class="title mb-2 mb-lg-3">Sign Up</h1>
               <div class="field">
                 <label class="label">Email</label>
-                <input class="input" placeholder="Email" name="email" />
+                <input class="input" type="email" placeholder="Email" name="email" / required>
                 <p class="help is-danger">${getError(errors, 'email')}</p>
               </div>
               <div class="field">
@@ -28,12 +27,14 @@ module.exports = ({ req, errors }) => {
                   'passwordConfirmation'
                 )}</p>
               </div>
-              <button class="button is-primary w-100">Submit</button>
+              <button class="btn btn-primary btn-xl w-100">Submit</button>
             </form>
-            <a href="/signin">Have an account? Sign In</a>
+            <a href="/signin" class="link-primary">Have an account? Sign In</a>
           </div>
         </div>
       </div>
-    `
+    `,
+    flashSuccess,
+    currentUser
   });
 };

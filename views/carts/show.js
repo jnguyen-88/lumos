@@ -1,6 +1,6 @@
 const layout = require('../layout');
 
-module.exports = ({ cart, cartItemCount }) => {
+module.exports = ({ cart, cartItemCount, currentUser }) => {
   const renderedItems = cart.items
     .map((item) => {
       return `
@@ -50,6 +50,7 @@ module.exports = ({ cart, cartItemCount }) => {
         </div>
       </div>
     `,
-    cartItemCount
+    cartItemCount,
+    currentUser
   });
 };

@@ -1,7 +1,7 @@
 const express = require('express');
 const Product = require('../models/product');
 const Cart = require('../models/cart');
-const checkAsync = require('../utils/checkAsync');
+const checkAsync = require('../public/javascripts/checkAsync');
 const productsIndexTemplate = require('../views/products/index');
 const productShowTemplate = require('../views/products/show');
 const mongoose = require('mongoose');
@@ -14,33 +14,51 @@ router.get(
   checkAsync(async (req, res) => {
     const allProducts = await Product.find({});
     const featuredProducts = await Product.find({ isFeatured: true });
-    const cart = await Cart.findOne();
 
     // Number of items inside of Cart
-    const cartItemCount = cart
-      ? cart.items.reduce((total, item) => total + item.quantity, 0)
-      : 0;
+    let cartItemCount = 0;
+    if (req.user) {
+      const cart = await Cart.findOne({ user: req.user._id });
+      cartItemCount = cart
+        ? cart.items.reduce((total, item) => total + item.quantity, 0)
+        : 0;
+    }
 
     res.send(
-      productsIndexTemplate({ allProducts, featuredProducts, cartItemCount })
+      productsIndexTemplate({
+        allProducts,
+        featuredProducts,
+        cartItemCount,
+        flashSuccess: res.locals.flashSuccess,
+        currentUser: res.locals.currentUser
+      })
     );
   })
 );
 
 //GET single Product
-router.get(
-  '/:id',
-  checkAsync(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    const cart = await Cart.findOne();
+// router.get(
+//   '/:id',
+//   checkAsync(async (req, res) => {
+//     const product = await Product.findById(req.params.id);
 
-    // Number of items inside of Cart
-    const cartItemCount = cart
-      ? cart.items.reduce((total, item) => total + item.quantity, 0)
-      : 0;
+//     // Number of items inside of Cart
+//     let cartItemCount = 0;
+//     if (req.user) {
+//       const cart = await Cart.findOne({ user: req.user._id });
+//       cartItemCount = cart
+//         ? cart.items.reduce((total, item) => total + item.quantity, 0)
+//         : 0;
+//     }
 
-    res.send(productShowTemplate({ product, cartItemCount }));
-  })
-);
+//     res.send(
+//       productShowTemplate({
+//         product,
+//         cartItemCount,
+//         currentUser: res.locals.currentUser
+//       })
+//     );
+//   })
+// );
 
 module.exports = router;

@@ -3,7 +3,13 @@ const app = express();
 app.use(express.static('public'));
 const layout = require('../layout');
 
-module.exports = ({ product, cartItemCount }) => {
+module.exports = ({
+  product,
+  cartItemCount,
+  currentUser,
+  flashSuccess,
+  flashError
+}) => {
   const renderedProductHTML = `
   <div class="col col-md-3 product text-center">
   <figure>
@@ -67,6 +73,9 @@ module.exports = ({ product, cartItemCount }) => {
       </div>
     </section>
     `,
-    cartItemCount
+    cartItemCount,
+    currentUser,
+    flashSuccess,
+    flashError
   });
 };

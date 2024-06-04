@@ -8,8 +8,13 @@ const adminProductsRouter = require('./routes/admin/products');
 const productsRouter = require('./routes/products');
 const cartsRouter = require('./routes/carts');
 const errorsRouter = require('./routes/error');
+const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const errorTemplate = require('./views/error');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
 //Mongoose Config
 const mongoose = require('mongoose');
@@ -30,15 +35,41 @@ main();
 
 //Express Config
 const app = express();
+const sessionConfig = {
+  secret: 'thisisnotagoodsecret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+};
+app.use(session(sessionConfig));
+app.use(flash());
+
+// Passport Config
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'email', passwordField: 'password' },
+    User.authenticate()
+  )
+);
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+  res.locals.flashSuccess = req.flash('success');
+  res.locals.flashError = req.flash('error');
+  res.locals.currentUser = req.user;
+  next();
+});
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(
-  cookieSession({
-    keys: ['lkasld235j']
-  })
-);
+
 app.use('/admin', adminProductsRouter);
 app.use(authRouter);
 app.use('/products', productsRouter);

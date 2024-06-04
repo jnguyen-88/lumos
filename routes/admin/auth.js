@@ -1,9 +1,17 @@
 const express = require('express');
+const passport = require('passport');
 
-const { handleErrors, validateProduct } = require('./middlewares');
+const {
+  handleErrors,
+  validateProduct,
+  storeReturnTo
+} = require('./middlewares');
 const usersRepo = require('../../repositories/users');
 const signupTemplate = require('../../views/admin/auth/signup');
 const signinTemplate = require('../../views/admin/auth/signin');
+const checkAsync = require('../../public/javascripts/checkAsync');
+const User = require('../../models/user');
+
 const {
   requireEmail,
   requirePassword,
@@ -14,6 +22,7 @@ const {
 
 const router = express.Router();
 
+// SignUP
 router.get('/signup', (req, res) => {
   res.send(signupTemplate({ req }));
 });
@@ -22,38 +31,60 @@ router.post(
   '/signup',
   [requireEmail, requirePassword, requirePasswordConfirmation],
   handleErrors(signupTemplate),
-  async (req, res) => {
-    const { email, password } = req.body;
-    const user = await usersRepo.create({ email, password });
+  checkAsync(async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = new User({ email });
+      const registeredUser = await User.register(user, password);
 
-    req.session.userId = user.id;
-
-    res.redirect('/admin/products');
-  }
+      req.flash(
+        'success',
+        'Successfully Registered New User. Welcome to Lumos!'
+      );
+      req.session.userId = registeredUser._id;
+      res.redirect('/admin/products');
+    } catch (error) {
+      req.flash('error', 'Registration failed. Please try again.');
+      res.redirect('/signup');
+    }
+  })
 );
 
-router.get('/signout', (req, res) => {
-  req.session = null;
-  res.send('You are logged out');
-});
-
+// SignIN
 router.get('/signin', (req, res) => {
-  res.send(signinTemplate({}));
+  res.send(
+    signinTemplate({
+      flashSuccess: res.locals.flashSuccess,
+      flashError: res.locals.flashError,
+      currentUser: res.locals.currentUser
+    })
+  );
 });
 
 router.post(
   '/signin',
-  [requireEmailExists, requireValidPasswordForUser],
-  handleErrors(signinTemplate),
-  async (req, res) => {
-    const { email } = req.body;
-
-    const user = await usersRepo.getOneBy({ email });
-
-    req.session.userId = user.id;
-
-    res.redirect('/admin/products');
+  storeReturnTo,
+  passport.authenticate('local', {
+    failureFlash: 'Invalid email or password.', // Flash message on failure
+    failureRedirect: '/signin' // Redirect to sign-in page on failure
+  }),
+  (req, res) => {
+    req.flash('success', 'Welcome back!');
+    const redirectUrl = res.locals.returnTo || '/admin/products';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
   }
 );
+
+// SignOUT
+router.get('/signout', (req, res, next) => {
+  req.logout((error) => {
+    if (error) {
+      return next(error);
+    }
+    req.flash('success', 'You are logged out');
+    res.redirect('/products');
+  });
+});
 
 module.exports = router;
