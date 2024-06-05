@@ -35,7 +35,7 @@ function renderProductType(productType, count, collection) {
            <p class="price mt-3 mb-3 mb-md-4 fs-2">$${parseFloat(
              productType.price
            ).toFixed(2)}</p>
-           <form action="/cart/products" method="POST">
+           <form action="/cart/products" method="POST" onsubmit="return handleAddToCart()">
             <input hidden value="${productType.id}" name="cart[productId]" />
             <div class="buttons-1 buttons-modal">
             <div class="d-flex justify-content-center mb-3 mb-md-6">

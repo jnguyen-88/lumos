@@ -28,7 +28,7 @@ module.exports = ({ content, flashSuccess, flashError, currentUser }) => {
                     
                     ${
                       currentUser
-                        ? '<a href="/signout">Signout</a>'
+                        ? '<a href="/signout" class="text-primary">Signout</a>'
                         : '<a href="/signin"><i class="fi fi-rs-user"></i></a>'
                     }
                   </div>

@@ -20,14 +20,33 @@ const products = require('../../views/products');
 const ExpressError = require('../../public/javascripts/ExpressError.js');
 
 const router = express.Router();
+const upload = multer({ storage }).array('images', 2);
 
-const upload = multer({ storage });
+const getCartItemCount = async (userId) => {
+  const cart = await Cart.findOne({ user: userId });
+  return cart
+    ? cart.items.reduce((total, item) => total + item.quantity, 0)
+    : 0;
+};
+
+const checkFileCount = (req, res, next) => {
+  upload(req, res, (err) => {
+    if (err) {
+      return next(err);
+    }
+    if (!req.files || req.files.length !== 2) {
+      req.flash('error', 'You must upload exactly 2 images.');
+      return res.redirect('/admin/products/new');
+    }
+    next();
+  });
+};
 
 // POST route for creating a new product (for Admin only)
 router.post(
   '/products/new',
   isLoggedIn,
-  upload.array('images', 2),
+  checkFileCount,
   checkAsync(async (req, res, next) => {
     const { title, price, description, isFeatured } = req.body.product;
     const featuredStatus = isFeatured ? true : false;
@@ -83,6 +102,11 @@ router.delete(
   isLoggedIn,
   checkAsync(async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      req.flash('error', 'Product not found');
+    } else {
+      req.flash('success', 'Deleted product');
+    }
     res.redirect('/admin/products');
   })
 );
@@ -94,7 +118,8 @@ router.get(
   checkAsync(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.send('Product not found');
+      req.flash('error', 'Product not found');
+      return res.redirect('/admin/products');
     }
     res.send(
       productsEditTemplate({
@@ -111,18 +136,7 @@ router.get(
 router.put(
   '/products/:id',
   isLoggedIn,
-  upload.array('images', 2),
-  (err, req, res, next) => {
-    // Error handling middleware for multer
-    if (err instanceof multer.MulterError) {
-      console.error('Multer error:', err);
-      return res.status(500).send('Multer Error: ' + err.message);
-    } else if (err) {
-      console.error('Unknown Error:', err);
-      return res.status(500).send('An unknown error occurred');
-    }
-    next();
-  },
+  checkFileCount,
   checkAsync(async (req, res, next) => {
     try {
       const product = await Product.findById(req.params.id);
@@ -133,19 +147,25 @@ router.put(
         description,
         isFeatured: isFeatured === 'on'
       };
+
       // Check if there are new images uploaded
-      if (req.files && req.files.length > 0) {
-        // Assuming you want to replace the old images
+      if (req.files && req.files.length === 2) {
         updates.images = req.files.map((file) => ({
           url: file.path,
           filename: file.filename
         }));
+      } else {
+        req.flash('error', 'You must upload exactly 2 images.');
+        return res.redirect(`/admin/products/${req.params.id}/edit`);
       }
+
       await Product.updateOne({ _id: req.params.id }, updates);
+      req.flash('success', 'Updated product');
       res.redirect('/admin/products');
     } catch (error) {
       console.error('Failed to update product:', error);
-      res.status(500).send('Failed to update the product');
+      req.flash('error', 'Failed to update product');
+      res.redirect('/admin/products');
     }
   })
 );

@@ -1,7 +1,7 @@
 const layout = require('../layout');
 const { getError } = require('../../helpers');
 
-module.exports = ({ req, flashSuccess, errors, currentUser }) => {
+module.exports = ({ req, flashSuccess, flashError, errors, currentUser }) => {
   return layout({
     content: `
       <div class="container">
@@ -35,6 +35,7 @@ module.exports = ({ req, flashSuccess, errors, currentUser }) => {
       </div>
     `,
     flashSuccess,
+    flashError,
     currentUser
   });
 };

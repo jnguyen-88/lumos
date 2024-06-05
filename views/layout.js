@@ -34,7 +34,7 @@ module.exports = ({
                   <div class="navbar-item me-2 me-sm-4">
                     ${
                       currentUser
-                        ? '<a href="/signout">Signout</a>'
+                        ? '<a href="/signout" class="text-primary">Signout</a>'
                         : '<a href="/signin"><i class="fi fi-rs-user"></i></a>'
                     }
                   </div>

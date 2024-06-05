@@ -69,7 +69,15 @@ router.get(
       ? cart.items.reduce((total, item) => total + item.quantity, 0)
       : 0;
 
-    res.send(cartShowTemplate({ cart, cartItemCount, currentUser: req.user }));
+    res.send(
+      cartShowTemplate({
+        cart,
+        cartItemCount,
+        currentUser: req.user,
+        flashSuccess: res.locals.flashSuccess,
+        flashError: res.locals.flashError
+      })
+    );
   })
 );
 
@@ -90,6 +98,8 @@ router.delete(
         (total, item) => total + item.price * item.quantity,
         0
       );
+      req.flash('success', 'Removed item from cart');
+      req.flash('error', 'Oops! Unable to remove item from cart');
       await cart.save();
     }
     res.redirect('/cart');

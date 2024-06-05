@@ -20,6 +20,10 @@ a {
   text-decoration: none;
 }
 
+a.text-primary {
+  color: var(--primary) !important;
+}
+
 .bg-primary {
   background-color: var(--primary) !important;
 }
@@ -300,10 +304,6 @@ a {
 .navbar-top.navbar {
   background-color: var(--white);
   box-shadow: 2px 2px 5px var(--primary);
-}
-
-#cart h3 {
-  margin-top: 50px;
 }
 
 #cart .cart-item {

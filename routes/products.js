@@ -36,29 +36,4 @@ router.get(
   })
 );
 
-//GET single Product
-// router.get(
-//   '/:id',
-//   checkAsync(async (req, res) => {
-//     const product = await Product.findById(req.params.id);
-
-//     // Number of items inside of Cart
-//     let cartItemCount = 0;
-//     if (req.user) {
-//       const cart = await Cart.findOne({ user: req.user._id });
-//       cartItemCount = cart
-//         ? cart.items.reduce((total, item) => total + item.quantity, 0)
-//         : 0;
-//     }
-
-//     res.send(
-//       productShowTemplate({
-//         product,
-//         cartItemCount,
-//         currentUser: res.locals.currentUser
-//       })
-//     );
-//   })
-// );
-
 module.exports = router;
