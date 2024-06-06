@@ -12,6 +12,8 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const errorTemplate = require('./views/error');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongo')(session);
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/lumos';
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
@@ -19,11 +21,12 @@ const User = require('./models/user');
 //Mongoose Config
 const mongoose = require('mongoose');
 const Product = require('./models/product');
+const { MongoStore } = require('connect-mongo');
 
 async function main() {
   try {
     // Establish connection to the Lumos db
-    await mongoose.connect('mongodb://localhost:27017/lumos');
+    await mongoose.connect(dbUrl);
     console.log('MONGO Connection open');
   } catch (err) {
     console.log('An error occurred:', err);
@@ -35,8 +38,24 @@ main();
 
 //Express Config
 const app = express();
+
+const secret = 'thisisnotagoodsecret';
+
+const store = new MongoDBStore({
+  url: dbUrl,
+  secret,
+  touchAfter: 24 * 3600
+});
+
+store.on('error', function (e) {
+  console.log('Session Store error', e);
+});
+
+//Session Config
 const sessionConfig = {
-  secret: 'thisisnotagoodsecret',
+  store,
+  name: 'session',
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -82,6 +101,7 @@ app.use((err, req, res, next) => {
   res.send(errorTemplate({ err }));
 });
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000');
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log('Listening on port:' + port);
 });
