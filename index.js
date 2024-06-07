@@ -12,40 +12,35 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const errorTemplate = require('./views/error');
 const session = require('express-session');
-const MongoDBStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/lumos';
-// const dbUrl = 'mongodb://localhost:27017/lumos';
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
 //Mongoose Config
 const mongoose = require('mongoose');
-const Product = require('./models/product');
-const { MongoStore } = require('connect-mongo');
 
-async function main() {
-  try {
-    // Establish connection to the Lumos db
-    await mongoose.connect(dbUrl);
-    console.log('MONGO Connection open');
-  } catch (err) {
-    console.log('An error occurred:', err);
-    mongoose.disconnect();
-  }
-}
-
-main();
+mongoose
+  .connect(dbUrl)
+  .then(() => {
+    console.log('Database connected');
+  })
+  .catch((err) => {
+    console.error('Database connection error:', err);
+  });
 
 //Express Config
 const app = express();
 
 const secret = 'thisisnotagoodsecret';
 
-const store = new MongoDBStore({
-  url: dbUrl,
-  secret,
-  touchAfter: 24 * 3600
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: 'thisshouldbeabettersecret!'
+  }
 });
 
 store.on('error', function (e) {
