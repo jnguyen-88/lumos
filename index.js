@@ -91,7 +91,7 @@ app.use(methodOverride('_method'));
 
 app.use('/admin', adminProductsRouter);
 app.use(authRouter);
-app.use('/products', productsRouter);
+app.use(productsRouter);
 app.use('/cart', cartsRouter);
 app.use(errorsRouter);
 

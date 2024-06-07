@@ -26,7 +26,7 @@ router.post(
 
     if (!product) {
       req.flash('error', 'Product not found');
-      return res.redirect('/products');
+      return res.redirect('/');
     }
 
     let cart = await Cart.findOne({ user: userId });

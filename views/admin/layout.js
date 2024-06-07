@@ -19,7 +19,7 @@ module.exports = ({ content, flashSuccess, flashError, currentUser }) => {
           <nav class="navbar py-3 py-md-4">
             <div class="container px-md-5">
               <div>
-                <a href="/products">
+                <a href="/">
                   <h3 class="title mb-0">LUMOS</h3>
                 </a>
               </div>
