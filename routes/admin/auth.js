@@ -1,23 +1,17 @@
 const express = require('express');
 const passport = require('passport');
 
-const {
-  handleErrors,
-  validateProduct,
-  storeReturnTo
-} = require('./middlewares');
+const { handleErrors, storeReturnTo } = require('./middlewares');
 const signupTemplate = require('../../views/admin/auth/signup');
 const signinTemplate = require('../../views/admin/auth/signin');
 const checkAsync = require('../../public/javascripts/checkAsync');
 const User = require('../../models/user');
 
-const {
-  requireEmail,
-  requirePassword,
-  requirePasswordConfirmation,
-  requireEmailExists,
-  requireValidPasswordForUser
-} = require('./validators');
+// const {
+//   requireEmail,
+//   requirePassword,
+//   requirePasswordConfirmation
+// } = require('./validators');
 
 const router = express.Router();
 
@@ -28,7 +22,6 @@ router.get('/signup', (req, res) => {
 
 router.post(
   '/signup',
-  [requireEmail, requirePassword, requirePasswordConfirmation],
   handleErrors(signupTemplate),
   checkAsync(async (req, res) => {
     try {

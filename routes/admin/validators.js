@@ -11,17 +11,6 @@
 //     .toFloat()
 //     .isFloat({ min: 1 })
 //     .withMessage('Must be a number greater than 1'),
-//   requireEmail: check('email')
-//     .trim()
-//     .normalizeEmail()
-//     .isEmail()
-//     .withMessage('Must be a valid email')
-//     .custom(async (email) => {
-//       const existingUser = await usersRepo.getOneBy({ email });
-//       if (existingUser) {
-//         throw new Error('Email in use');
-//       }
-//     }),
 //   requirePassword: check('password')
 //     .trim()
 //     .isLength({ min: 4, max: 20 })
