@@ -75,7 +75,7 @@ router.get('/signout', (req, res, next) => {
       return next(error);
     }
     req.flash('success', 'You are logged out');
-    res.redirect('/products');
+    res.redirect('/');
   });
 });
 
