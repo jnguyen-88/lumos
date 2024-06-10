@@ -1,4 +1,4 @@
-const { validationResult } = require('express-validator');
+const { validationResult, body } = require('express-validator');
 const { productSchema } = require('../../schemas');
 const ExpressError = require('../../public/javascripts/ExpressError');
 
@@ -13,6 +13,33 @@ module.exports = {
       next();
     }
   },
+  checkFileCount(req, res, next) {
+    upload(req, res, (err) => {
+      if (err) {
+        return next(err);
+      }
+      if (!req.files || req.files.length !== 2) {
+        req.flash('error', 'You must upload exactly 2 images.');
+        return res.redirect('/admin/products/new');
+      }
+      next();
+    });
+  },
+  validateProductData: [
+    body('product.title').notEmpty().withMessage('Title is required'),
+    body('product.price')
+      .isFloat({ gt: 0 })
+      .withMessage('Price must be greater than 0'),
+    body('product.description')
+      .notEmpty()
+      .withMessage('Description is required')
+  ],
+  validateSignup: [
+    body('email').isEmail().withMessage('Enter a valid email address'),
+    body('password')
+      .isLength({ min: 4 })
+      .withMessage('Password must be at least 4 characters long')
+  ],
   handleErrors(templateFunc, dataCb) {
     return async (req, res, next) => {
       const errors = validationResult(req);

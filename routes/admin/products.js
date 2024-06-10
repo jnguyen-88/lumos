@@ -9,7 +9,9 @@ const {
   handleErrors,
   requireAuth,
   validateProduct,
-  isLoggedIn
+  isLoggedIn,
+  checkFileCount,
+  validateProductData
 } = require('./middlewares');
 const productsNewTemplate = require('../../views/admin/products/new');
 const productsIndexTemplate = require('../../views/admin/products/index');
@@ -27,19 +29,6 @@ const getCartItemCount = async (userId) => {
   return cart
     ? cart.items.reduce((total, item) => total + item.quantity, 0)
     : 0;
-};
-
-const checkFileCount = (req, res, next) => {
-  upload(req, res, (err) => {
-    if (err) {
-      return next(err);
-    }
-    if (!req.files || req.files.length !== 2) {
-      req.flash('error', 'You must upload exactly 2 images.');
-      return res.redirect('/admin/products/new');
-    }
-    next();
-  });
 };
 
 // POST route for creating a new product (for Admin only)
